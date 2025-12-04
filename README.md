@@ -1,3 +1,9 @@
+# Restaurant Voice Agent 🎤🍽️
+
+> **⚠️ Development Status Note:** 
+> This project is currently in development phase. Functionality implementation, comprehensive testing and optimization are pending.
+
+
 # Restaurant Booking Voice Agent
 
 Voice-first MERN application that lets guests reserve a table purely through natural speech. The assistant guides users through every reservation step, looks up live weather via OpenWeatherMap, suggests the best seating, and stores confirmed bookings in MongoDB.
@@ -11,7 +17,21 @@ Voice-first MERN application that lets guests reserve a table purely through nat
 - **Audit-friendly storage** – Each saved booking includes weather snapshot, seating suggestion, and generated bookingId so the history is traceable.
 
 ## Architecture
-
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   User Voice    │────▶│  Speech-to-Text │────▶│   Intent       │
+│    Input        │    │   (Frontend)    │    │  Recognition   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                                         │
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  Voice Response │◀───│   Backend API   │◀───│  Booking Logic │
+│  (Text-to-Speech)│    │   (Express.js)  │    │   & Database   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   User          │    │   Restaurant    │    │   MongoDB      │
+│   Interface     │    │   Management    │    │   Atlas Cloud  │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 Browser (React + Web Speech)
   ├─ VoiceControls (SpeechRecognition + speechSynthesis)
