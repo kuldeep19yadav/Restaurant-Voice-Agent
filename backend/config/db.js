@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 mongoose.set('strictQuery', true);
 
+// Establishes a single shared Mongo connection for the entire API.
 const connectDB = async () => {
   const uri = process.env.MONGO_URI;
 

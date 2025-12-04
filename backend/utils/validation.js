@@ -1,5 +1,6 @@
 const dayjs = require('dayjs');
 
+// Ensures the provided date is valid and strictly in the future.
 const isFutureDate = (dateValue) => {
   const parsed = dayjs(dateValue);
   if (!parsed.isValid()) {
@@ -10,6 +11,10 @@ const isFutureDate = (dateValue) => {
 
 const sanitizeTime = (timeValue = '') => timeValue.trim();
 
+/**
+ * Normalizes + validates incoming booking payloads.
+ * Returns both accumulated errors and sanitized values.
+ */
 const validateBookingInput = (payload = {}) => {
   const errors = [];
 

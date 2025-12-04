@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 
+// Renders the persisted bookings pulled from the backend API.
 const BookingList = ({ bookings }) => (
   <div className="booking-list">
     <h3>Saved Bookings</h3>

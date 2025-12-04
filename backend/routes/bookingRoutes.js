@@ -8,6 +8,7 @@ const {
 
 const router = express.Router();
 
+// Booking CRUD endpoints consumed by the React frontend.
 router.post('/', createBooking);
 router.get('/', getBookings);
 router.get('/:id', getBookingById);

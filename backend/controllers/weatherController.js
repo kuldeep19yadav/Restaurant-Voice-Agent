@@ -1,5 +1,6 @@
 const { getWeatherForDate } = require('../services/weatherService');
 
+// Lightweight GET handler used by the frontend to preview weather before booking saves.
 const getWeatherPreview = async (req, res, next) => {
   try {
     const { date, city } = req.query;

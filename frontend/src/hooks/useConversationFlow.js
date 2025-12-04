@@ -10,6 +10,7 @@ const axiosInstance = axios.create({
   timeout: 8000,
 });
 
+// Canonical order for the voice-driven booking flow.
 const conversationSteps = [
   'GREETING',
   'ASK_GUESTS',
@@ -39,6 +40,7 @@ const initialFormState = {
   city: DEFAULT_CITY,
 };
 
+// Naive number extractor (sufficient for spoken responses like "we are four").
 const parseGuests = (text) => {
   const match = text.match(/(\d+)/);
   return match ? Number(match[1]) : null;
@@ -46,6 +48,7 @@ const parseGuests = (text) => {
 
 const sanitizeOrdinal = (text) => text.replace(/(\d+)(st|nd|rd|th)/gi, '$1');
 
+// Accepts phrases like "December 20th" and ensures the date is in the future.
 const parseDateInput = (text) => {
   const value = sanitizeOrdinal(text.trim());
   const parsed = dayjs(value);
@@ -58,6 +61,7 @@ const parseDateInput = (text) => {
   return parsed;
 };
 
+// Converts fuzzy time statements (e.g., "7 pm") into 24h HH:mm format.
 const parseTimeInput = (text) => {
   const match = text.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
   if (!match) return null;
@@ -81,6 +85,10 @@ const seatingFromCategory = (category) => {
 const isAffirmative = (text) => positiveKeywords.some((word) => text.toLowerCase().includes(word));
 const isNegative = (text) => negativeKeywords.some((word) => text.toLowerCase().includes(word));
 
+/**
+ * Central hook that owns the booking form data, conversation state machine,
+ * weather lookups, and API persistence.
+ */
 const useConversationFlow = () => {
   const [state, setState] = useState(conversationSteps[0]);
   const [formData, setFormData] = useState(initialFormState);
@@ -109,6 +117,7 @@ const useConversationFlow = () => {
     }
   }, []);
 
+  // Hydrates the sidebar list when the page loads.
   const fetchExistingBookings = useCallback(async () => {
     try {
       const { data } = await axiosInstance.get('/api/bookings');
@@ -122,6 +131,7 @@ const useConversationFlow = () => {
     fetchExistingBookings();
   }, [fetchExistingBookings]);
 
+  // Shells out to backend weather endpoint so suggestions stay server-trusted.
   const fetchWeatherPreview = useCallback(
     async (date) => {
       try {
@@ -137,6 +147,7 @@ const useConversationFlow = () => {
     [formData.city]
   );
 
+  // Posts the completed booking to the backend and surfaces the success speech.
   const handleSave = useCallback(async () => {
     if (!formData.bookingDate || !weatherInfo) {
       return 'I need the date and weather before I can save the booking.';
@@ -172,6 +183,7 @@ const useConversationFlow = () => {
     }
   }, [formData, weatherInfo]);
 
+  // Triggers weather lookup and seating recommendation once form data is ready.
   const handleWeatherAndSuggestion = useCallback(async () => {
     if (!formData.bookingDate) {
       setState('ASK_DATE');
@@ -207,6 +219,7 @@ const useConversationFlow = () => {
     }
   }, [fetchWeatherPreview, formData.bookingDate]);
 
+  // Deterministic state machine deciding what the agent should ask next.
   const processState = useCallback(
     async (input) => {
       switch (state) {
@@ -270,6 +283,7 @@ const useConversationFlow = () => {
     [handleSave, handleWeatherAndSuggestion, state]
   );
 
+  // Resets everything so a new reservation can start cleanly.
   const resetConversation = useCallback(() => {
     setFormData(initialFormState);
     setState('GREETING');
@@ -285,6 +299,7 @@ const useConversationFlow = () => {
     setAgentMessage('Hello! I am your restaurant assistant. What is your name?');
   }, []);
 
+  // Entry point invoked by the speech layer with final transcripts.
   const handleUserInput = useCallback(
     async (text) => {
       const cleaned = text.trim();

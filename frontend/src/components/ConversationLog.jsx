@@ -1,3 +1,4 @@
+// Friendly transcript of the dialog so users can review the flow.
 const ConversationLog = ({ messages }) => (
   <div className="conversation-log">
     <h3>Conversation</h3>

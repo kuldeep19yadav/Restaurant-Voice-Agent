@@ -25,6 +25,7 @@ const Home = () => {
   const recognitionRef = useRef(null);
   const isRecordingRef = useRef(false);
 
+  // Single speech-synthesis helper so every agent response is voiced.
   const speak = useCallback((text) => {
     if (typeof window === 'undefined' || !window.speechSynthesis || !text) return;
     const utterance = new SpeechSynthesisUtterance(text);
@@ -32,6 +33,7 @@ const Home = () => {
     window.speechSynthesis.speak(utterance);
   }, []);
 
+  // Final transcripts drive the conversation hook; interim text populates UI.
   const handleFinalTranscript = useCallback(
     async (text) => {
       const reply = await handleUserInput(text);
@@ -96,6 +98,7 @@ const Home = () => {
     };
   }, [handleFinalTranscript, speak]);
 
+  // Simple toggle to start/stop continuous recognition.
   const toggleRecording = () => {
     if (!speechSupported || !recognitionRef.current) return;
     if (isRecordingRef.current) {
@@ -109,6 +112,7 @@ const Home = () => {
     }
   };
 
+  // Reset clears recognition state + conversation progress.
   const handleReset = () => {
     if (isRecordingRef.current && recognitionRef.current) {
       isRecordingRef.current = false;

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Embedded snapshot of the weather conditions at booking time.
 const weatherInfoSchema = new mongoose.Schema(
   {
     category: { type: String, required: true },
@@ -15,6 +16,7 @@ const weatherInfoSchema = new mongoose.Schema(
   { _id: false }
 );
 
+// Master booking record persisted in MongoDB.
 const bookingSchema = new mongoose.Schema({
   bookingId: { type: String, required: true, unique: true },
   customerName: { type: String, required: true, trim: true },

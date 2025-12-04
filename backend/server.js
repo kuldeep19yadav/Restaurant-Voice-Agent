@@ -20,6 +20,7 @@ app.get('/', (_, res) => {
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/weather', weatherRoutes);
 
+// Centralized error handler ensures consistent JSON responses.
 app.use((err, req, res, next) => {
   console.error('[API ERROR]', err);
   const status = err.statusCode || 500;
@@ -30,6 +31,7 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
+// Wait for Mongo before accepting traffic so all routes have DB access.
 connectDB()
   .then(() => {
     app.listen(PORT, () => {

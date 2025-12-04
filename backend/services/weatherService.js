@@ -4,6 +4,7 @@ const dayjs = require('dayjs');
 const FORECAST_URL = 'https://api.openweathermap.org/data/2.5/forecast';
 const CURRENT_URL = 'https://api.openweathermap.org/data/2.5/weather';
 
+// Normalizes OpenWeatherMap weather strings into four high-level categories.
 const mapWeatherToCategory = (condition = '') => {
   const value = condition.toLowerCase();
   if (value.includes('thunder')) {
@@ -18,12 +19,14 @@ const mapWeatherToCategory = (condition = '') => {
   return 'sunny';
 };
 
+// Shared helper so both frontend + backend agree on seating recommendations.
 const seatingFromCategory = (category) => {
   if (category === 'sunny') return 'outdoor';
   if (category === 'cloudy') return 'either';
   return 'indoor';
 };
 
+// Picks the forecast entry whose timestamp is closest to the requested date.
 const pickBestForecast = (list, targetDate) => {
   if (!Array.isArray(list) || list.length === 0) return null;
   let best = list[0];
@@ -39,6 +42,7 @@ const pickBestForecast = (list, targetDate) => {
   return best;
 };
 
+// Converts OpenWeatherMap payloads into the structure our Booking model stores.
 const normalizeWeatherPayload = (payload, city) => {
   const weatherMain = payload?.weather?.[0]?.main || 'Clear';
   const description = payload?.weather?.[0]?.description || '';
@@ -57,6 +61,7 @@ const normalizeWeatherPayload = (payload, city) => {
   };
 };
 
+// Attempts to fetch 5-day forecast first, falls back to current weather if needed.
 const fetchForecast = async (date, city) => {
   const apiKey = process.env.OPENWEATHER_API_KEY;
   if (!apiKey) {
@@ -88,6 +93,7 @@ const fetchForecast = async (date, city) => {
   }
 };
 
+// Public service consumed by controllers to obtain normalized weather data.
 const getWeatherForDate = async (date, city = process.env.DEFAULT_CITY || 'New York') => {
   const forecast = await fetchForecast(date, city);
   return normalizeWeatherPayload(forecast, city);

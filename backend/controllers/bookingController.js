@@ -3,6 +3,10 @@ const Booking = require('../models/Booking');
 const { validateBookingInput } = require('../utils/validation');
 const { getWeatherForDate, seatingFromCategory } = require('../services/weatherService');
 
+/**
+ * Handles POST /api/bookings
+ * Validates payload, enriches with weather + seating suggestion, saves to Mongo.
+ */
 const createBooking = async (req, res, next) => {
   try {
     const { errors, payload } = validateBookingInput(req.body);
@@ -34,6 +38,7 @@ const createBooking = async (req, res, next) => {
   }
 };
 
+// Returns newest bookings first for the dashboard view.
 const getBookings = async (_req, res, next) => {
   try {
     const bookings = await Booking.find().sort({ createdAt: -1 });
@@ -55,6 +60,7 @@ const getBookingById = async (req, res, next) => {
   }
 };
 
+// Soft requirements allow DELETE to fully remove the document.
 const deleteBooking = async (req, res, next) => {
   try {
     const deleted = await Booking.findByIdAndDelete(req.params.id);
